@@ -28,29 +28,27 @@ export const FloatingNav = ({
   className?: string;
 }) => {
   const { scrollYProgress } = useScroll();
-
   const [visible, setVisible] = useState(true);
+  const navRefs = useRef<(HTMLButtonElement | null)[]>([]); // ✅ FIX: Move useRef outside of map
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
-    // Check if current is not undefined and is a number
     if (typeof current === "number") {
-      const direction = current! - scrollYProgress.getPrevious()!;
-
-      // console.log(scrollYProgress.get());
-
+      const direction = current - (scrollYProgress.getPrevious() ?? 0);
       if (scrollYProgress.get() < 0) {
         setVisible(false);
       } else {
-        if (direction < 0) {
-          setVisible(true);
-        } else {
-          setVisible(false);
-        }
+        setVisible(direction < 0);
       }
     }
   });
 
-  const [position, setPosition] = useState({
+  const [position, setPosition] = useState<{
+    left: number;
+    width: number;
+    height: number;
+    opacity: number;
+    scale: number;
+  }>({
     left: 0,
     width: 0,
     height: 0,
@@ -61,18 +59,13 @@ export const FloatingNav = ({
   return (
     <AnimatePresence mode="popLayout">
       <motion.div
-        initial={{
-          opacity: 0,
-          scale: 0,
-          y: 0,
-        }}
+        initial={{ opacity: 0, scale: 0, y: 0 }}
         animate={{
           opacity: visible ? 1 : 0,
           scale: visible ? 1 : 0,
           y: visible ? 0 : -100,
         }}
         transition={{
-          // duration: 0.5,
           ease: "easeInOut",
           type: "spring",
           stiffness: 100,
@@ -89,67 +82,70 @@ export const FloatingNav = ({
           }));
         }}
       >
-        {navItems.map((navItem, idx: number) => {
-          // const ref = useRef(null);
-          const ref = useRef<HTMLButtonElement | null>(null);
-
-          return (
-            <React.Fragment key={idx}>
-              <button
-                onClick={() => {
-                  if (navItem.id === "home") {
-                    scrollToTop();
-                  } else {
-                    scrollToSection(navItem.id);
-                  }
-                }}
-                key={`link-${idx}`}
-                className={cn(
-                  "relative dark:text-white items-center flex text-black min-w-[40px] sm:min-w-[50px] md:min-w-[60px] lg:min-w-[120px] justify-center"
-                )}
-                ref={ref}
-                onMouseEnter={() => {
-                  if (!ref?.current) return;
-
-                  const { width, height } = ref.current.getBoundingClientRect();
-
-                  setPosition({
-                    left: ref.current.offsetLeft,
-                    width,
-                    height,
-                    opacity: 1,
-                    scale: 1,
-                  });
-                }}
-              >
-                <span className="block sm:hidden">{navItem.icon}</span>
-                <span className="hidden sm:flex text-sm h-8 items-center">
-                  {navItem.name}
-                </span>
-              </button>
-              {/* Render separator unless it's the last item */}
-              {idx < navItems.length - 1 && (
-                <span className="h-3 w-[2PX] bg-neutral-300"></span>
+        {navItems.map((navItem, idx) => (
+          <React.Fragment key={idx}>
+            <button
+              onClick={() => {
+                if (navItem.id === "home") {
+                  scrollToTop();
+                } else {
+                  scrollToSection(navItem.id);
+                }
+              }}
+              ref={(el) => {
+                navRefs.current[idx] = el;
+              }}
+              className={cn(
+                "relative dark:text-white items-center flex text-black min-w-[40px] sm:min-w-[50px] md:min-w-[60px] lg:min-w-[120px] justify-center"
               )}
+              onMouseEnter={() => {
+                const ref = navRefs.current[idx];
+                if (!ref) return;
 
-              <Cursor position={position} />
-            </React.Fragment>
-          );
-        })}
+                const { width, height } = ref.getBoundingClientRect();
+
+                setPosition({
+                  left: ref.offsetLeft,
+                  width,
+                  height,
+                  opacity: 1,
+                  scale: 1,
+                });
+              }}
+            >
+              <span className="block sm:hidden">{navItem.icon}</span>
+              <span className="hidden sm:flex text-sm h-8 items-center">
+                {navItem.name}
+              </span>
+            </button>
+
+            {idx < navItems.length - 1 && (
+              <span className="h-3 w-[2px] bg-neutral-300"></span>
+            )}
+          </React.Fragment>
+        ))}
+
+        <Cursor position={position} />
       </motion.div>
     </AnimatePresence>
   );
 };
 
-const Cursor = ({ position }: { position: any }) => {
+const Cursor = ({
+  position,
+}: {
+  position: {
+    left: number;
+    width: number;
+    height: number;
+    opacity: number;
+    scale: number;
+  };
+}) => {
   return (
     <motion.div
-      animate={{
-        ...position,
-      }}
-      transition={{
-        ease: "easeInOut",
-      }}
+      animate={{ ...position }}
+      transition={{ ease: "easeInOut" }}
       className="absolute -z-10 h-7 rounded-[20px] bg-neutral-400/10 md:h-20"
     />
   );
