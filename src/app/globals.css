@@ -2,26 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  /* background-color: #0c0c0f;
+  color: #ffffff; */
 }
 
-@media (prefers-color-scheme: dark) {
+/* Change text selection color globally */
+::selection {
+  background-color: #05c92f; /* Custom background color for selection */
+  color: #000000; /* Custom text color for selection */
+}
+
+/* For Mozilla Firefox compatibility */
+::-moz-selection {
+  background-color: #05c92f;
+  color: #000000;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: grab;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 240 6% 9%;
+    --foreground: 0 0% 100%;
+    --card: 240 6% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 240 6% 14%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 264 100% 60%; /* Phantom's vibrant purple */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 18%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 4% 22%;
+    --muted-foreground: 210 7% 88%;
+    --accent: 195 86% 52%; /* Aqua blue accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 26%;
+    --input: 240 5% 26%;
+    --ring: 264 100% 60%;
+    --chart-1: 264 100% 60%;
+    --chart-2: 195 86% 52%;
+    --chart-3: 45 90% 55%;
+    --chart-4: 350 86% 58%;
+    --chart-5: 280 70% 65%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 0 0% 100%;
+    --foreground: 240 6% 9%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 6% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 6% 9%;
+    --primary: 195 86% 52%;
+    --primary-foreground: 240 6% 9%;
+    --secondary: 220 6% 85%;
+    --secondary-foreground: 240 6% 9%;
+    --muted: 220 8% 90%;
+    --muted-foreground: 240 6% 9%;
+    --accent: 280 86% 60%;
+    --accent-foreground: 240 6% 9%;
+    --destructive: 350 78% 52%;
+    --destructive-foreground: 240 6% 9%;
+    --border: 220 8% 90%;
+    --input: 220 8% 90%;
+    --ring: 264 100% 60%;
+    --chart-1: 264 100% 60%;
+    --chart-2: 195 86% 52%;
+    --chart-3: 45 90% 55%;
+    --chart-4: 350 86% 58%;
+    --chart-5: 280 70% 65%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

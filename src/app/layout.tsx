@@ -1,6 +1,15 @@
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+
+import Navbar from "@/components/sections/Navbar";
+import { FloatingNav } from "@/components/ui/floating-navbar";
+import { Metadata } from "next";
+import { Fira_Sans, Schibsted_Grotesk } from "next/font/google";
+
+import FloatingToTop from "@/components/FloatingToTop";
+import { ThemeProvider } from "@/components/theme-provider";
+import { navItems } from "@/lib/constants";
+import { ReactLenis } from "@/lib/lenis";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -11,6 +20,18 @@ const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+});
+
+const FiraSans = Fira_Sans({
+  subsets: ["latin"],
+  variable: "--font-fira-sans",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+const SchibstedGrotesk = Schibsted_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-schibsted-grotesk",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -25,11 +46,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <ReactLenis root>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${FiraSans.variable} ${SchibstedGrotesk.variable} antialiased bg-white text-neutral-900 dark:bg-neutral-900 dark:text-white transition-colors duration-300`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
+            <FloatingNav
+              navItems={navItems}
+              className="bg-neutral-100 dark:bg-neutral-800 hidden md:flex"
+            />
+
+            {children}
+
+            <FloatingToTop />
+          </ThemeProvider>
+        </body>
+      </ReactLenis>
     </html>
   );
 }
